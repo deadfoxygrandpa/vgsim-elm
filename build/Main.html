@@ -1,0 +1,299 @@
+<!DOCTYPE HTML>
+<html><head><meta charset="UTF-8"><title>Main</title><script type="text/javascript" src="/home/boss/.cabal/share/Elm-0.12/elm-runtime.js"></script><script type="text/javascript">Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Main";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var Keyboard = Elm.Keyboard.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Mouse = Elm.Mouse.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Random = Elm.Random.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var Window = Elm.Window.make(_elm);
+   var _op = {};
+   var GameState = F7(function (a,
+   b,
+   c,
+   d,
+   e,
+   f,
+   g) {
+      return {_: {}
+             ,gflips: d
+             ,grando: f
+             ,gstate: b
+             ,lstate: a
+             ,paused: c
+             ,player: g
+             ,timer: e};
+   });
+   var defaultPlayer = {_: {}
+                       ,pflips: 0
+                       ,timeOff: 0.0
+                       ,timeOn: 0.0};
+   var Player = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,pflips: c
+             ,timeOff: b
+             ,timeOn: a};
+   });
+   var Off = {ctor: "Off"};
+   var display = F3(function (_v0,
+   inout,
+   _v1) {
+      return function () {
+         return function () {
+            switch (_v0.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var h$ = Basics.toFloat(_v0._1);
+                    var w$ = Basics.toFloat(_v0._0);
+                    var light = _U.eq(_v1.lstate,
+                    Off) ? Graphics.Collage.filled(Color.black)(A2(Graphics.Collage.rect,
+                    w$,
+                    h$)) : Graphics.Collage.filled(Color.white)(A2(Graphics.Collage.rect,
+                    w$,
+                    h$));
+                    return A2(Graphics.Element.flow,
+                    Graphics.Element.down,
+                    _J.toList([A3(Graphics.Collage.collage,
+                    _v0._0,
+                    _v0._1,
+                    _J.toList([light
+                              ,Graphics.Collage.toForm(Text.plainText("video game simulator\nby stepvhen"))]))]));
+                 }();}
+            _E.Case($moduleName,
+            "between lines 146 and 153");
+         }();
+      }();
+   });
+   var On = {ctor: "On"};
+   var toggle = function (l) {
+      return _U.eq(l,
+      On) ? Off : _U.eq(l,
+      Off) ? On : l;
+   };
+   var stepPlayer = F4(function (_v6,
+   lstate,
+   delta,
+   flipped) {
+      return function () {
+         return function () {
+            var pflips$ = flipped ? _v6.pflips + 1 : _v6.pflips;
+            var timeOff$ = _U.eq(lstate,
+            Off) ? _v6.timeOff + delta : _v6.timeOff;
+            var timeOn$ = _U.eq(lstate,
+            On) ? _v6.timeOn + delta : _v6.timeOn;
+            return _U.replace([["timeOn"
+                               ,timeOn$]
+                              ,["timeOff",timeOff$]
+                              ,["pflips",pflips$]],
+            _v6);
+         }();
+      }();
+   });
+   var Attract = {ctor: "Attract"};
+   var Sandbox = {ctor: "Sandbox"};
+   var Explore = {ctor: "Explore"};
+   var Survival = {ctor: "Survival"};
+   var Skill = {ctor: "Skill"};
+   var Pause = {ctor: "Pause"};
+   var Start = {ctor: "Start"};
+   var defaultGame = {_: {}
+                     ,gflips: 0
+                     ,grando: 5.0
+                     ,gstate: Start
+                     ,lstate: On
+                     ,paused: false
+                     ,player: defaultPlayer
+                     ,timer: 0.0};
+   var lightSwitch = F3(function (_v8,
+   flipped,
+   timed) {
+      return function () {
+         return Basics.not(timed) && Basics.not(flipped) ? _v8.lstate : function () {
+            var _v10 = _v8.gstate;
+            switch (_v10.ctor)
+            {case "Skill":
+               return _U.eq(_v8.lstate,
+                 Off) && timed ? toggle(_v8.lstate) : _U.eq(_v8.lstate,
+                 On) && flipped ? toggle(_v8.lstate) : _v8.lstate;
+               case "Start":
+               return timed ? toggle(_v8.lstate) : _v8.lstate;}
+            return toggle(_v8.lstate);
+         }();
+      }();
+   });
+   var stepGame = F2(function (_v11,
+   _v12) {
+      return function () {
+         return function () {
+            return function () {
+               var gflips$ = _v11.flips;
+               var gstate$ = _v12.gstate;
+               var state$ = A3(lightSwitch,
+               _v12,
+               _U.cmp(_v11.flips,
+               _v12.gflips) > 0,
+               _U.cmp(_v12.timer,
+               _v12.grando) > 0);
+               var timer$ = !_U.eq(state$,
+               _v12.lstate) ? 0 : _v12.timer + _v11.delta;
+               var grando$ = !_U.eq(state$,
+               _v12.lstate) ? _v11.rando : _v12.grando;
+               var player$ = !_U.eq(gstate$,
+               _v12.gstate) ? defaultPlayer : A4(stepPlayer,
+               _v12.player,
+               _v12.lstate,
+               _v11.delta,
+               !_U.eq(state$,_v12.lstate));
+               return _U.replace([["lstate"
+                                  ,state$]
+                                 ,["gstate",gstate$]
+                                 ,["gflips",gflips$]
+                                 ,["timer",timer$]
+                                 ,["grando",grando$]
+                                 ,["player",player$]],
+               _v12);
+            }();
+         }();
+      }();
+   });
+   var pauseGame = F2(function (_v15,
+   _v16) {
+      return function () {
+         return function () {
+            return function () {
+               var paused$ = _v15.space ? Basics.not(_v16.paused) : _v16.paused;
+               return Basics.not(paused$) ? A2(stepGame,
+               _v15,
+               _U.replace([["paused",paused$]],
+               _v16)) : _U.replace([["paused"
+                                    ,paused$]],
+               _v16);
+            }();
+         }();
+      }();
+   });
+   var spacebar = F2(function (hit,
+   after) {
+      return hit && after;
+   });
+   var randSig = Signal.merge(Time.every(Time.second))(A2(Signal._op["<~"],
+   Basics.toFloat,
+   Signal.count(Mouse.clicks)));
+   var randogen = Signal.lift(function (x) {
+      return x * 4 + 0.51;
+   })(Random.$float(randSig));
+   var tdelta = A2(Signal._op["<~"],
+   Time.inSeconds,
+   Time.fps(30));
+   var diffTime = F2(function (a,
+   b) {
+      return function () {
+         var f = function (x) {
+            return A2(Signal._op["<~"],
+            function ($) {
+               return Time.inSeconds(Basics.fst($));
+            },
+            Time.timestamp(x));
+         };
+         return A2(Signal._op["~"],
+         A2(Signal._op["<~"],
+         F2(function (x,y) {
+            return x - y;
+         }),
+         f(a)),
+         f(b));
+      }();
+   });
+   var Input = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,delta: e
+             ,flips: a
+             ,mpos: b
+             ,rando: d
+             ,space: c};
+   });
+   var input = Signal.sampleOn(tdelta)(A2(Signal._op["~"],
+   A2(Signal._op["~"],
+   A2(Signal._op["~"],
+   A2(Signal._op["~"],
+   A2(Signal._op["<~"],
+   Input,
+   Signal.count(Mouse.clicks)),
+   Mouse.position),
+   A2(Signal._op["~"],
+   A2(Signal._op["<~"],
+   spacebar,
+   Keyboard.space),
+   A2(Time.since,
+   Time.second * 3.0e-2,
+   Keyboard.space))),
+   randogen),
+   tdelta));
+   var gameState = A3(Signal.foldp,
+   pauseGame,
+   defaultGame,
+   input);
+   var main = A4(Signal.lift3,
+   display,
+   Window.dimensions,
+   input,
+   gameState);
+   _elm.Main.values = {_op: _op
+                      ,diffTime: diffTime
+                      ,tdelta: tdelta
+                      ,randogen: randogen
+                      ,randSig: randSig
+                      ,spacebar: spacebar
+                      ,input: input
+                      ,defaultPlayer: defaultPlayer
+                      ,defaultGame: defaultGame
+                      ,toggle: toggle
+                      ,lightSwitch: lightSwitch
+                      ,stepPlayer: stepPlayer
+                      ,pauseGame: pauseGame
+                      ,stepGame: stepGame
+                      ,display: display
+                      ,gameState: gameState
+                      ,main: main
+                      ,Start: Start
+                      ,Pause: Pause
+                      ,Skill: Skill
+                      ,Survival: Survival
+                      ,Explore: Explore
+                      ,Sandbox: Sandbox
+                      ,Attract: Attract
+                      ,On: On
+                      ,Off: Off
+                      ,Input: Input
+                      ,Player: Player
+                      ,GameState: GameState};
+   return _elm.Main.values;
+};</script></head><body><script type="text/javascript">Elm.fullscreen(Elm.Main)</script><noscript></noscript></body></html>
