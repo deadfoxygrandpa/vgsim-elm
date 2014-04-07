@@ -11,8 +11,10 @@ type Input = { flips:Int
              , rando:Time
              , delta:Time }
 
+myfps = 20
+
 tdelta : Signal Time
-tdelta = inSeconds <~ fps 30
+tdelta = inSeconds <~ fps myfps
 
 randogen : Signal Time
 randogen = Random.float randSig |> lift (\x -> (x * 4) + 0.51 )
@@ -28,7 +30,7 @@ input = sampleOn tdelta <|
   Input <~ count Mouse.clicks
          ~ Mouse.position
          ~ ((\x y -> x && y) <~ Keyboard.space 
-                              ~ ((second *0.03) `since` Keyboard.space))
+                              ~ ((second / myfps) `since` Keyboard.space))
          ~ randogen
          ~ tdelta
    
@@ -161,11 +163,11 @@ display (w,h)
       str =   if  | gstate == Start -> "video game simulator\nby stepvhen"
                   | otherwise -> ""
    in flow down [
-                 --asText inout, asText game, 
+                 asText inout, asText game, 
                  collage w h [light, message clr str]
                  ]
 
 {-------------------------- RUNTIME --------------------}
 
 gameState = foldp pauseGame defaultGame input
-main = lift3 display Window.dimensions input gameState
+main = display (300, 300) <~ input ~gameState
