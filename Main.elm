@@ -2,6 +2,7 @@ import Mouse
 import Keyboard
 import Random
 import Window
+import Text
 
 {--------------- INPUT -------------}
 type Input = { flips:Int
@@ -9,10 +10,6 @@ type Input = { flips:Int
              , space:Bool
              , rando:Time
              , delta:Time }
-
-diffTime : Signal a -> Signal b -> Signal Float
-diffTime a b = let f x =( inSeconds . fst) <~ timestamp x
-               in  (-) <~ (f a) ~ (f b)
 
 tdelta : Signal Time
 tdelta = inSeconds <~ fps 30
@@ -30,7 +27,8 @@ input : Signal Input
 input = sampleOn tdelta <| 
   Input <~ count Mouse.clicks
          ~ Mouse.position
-         ~ (spacebar <~ Keyboard.space ~ ((second *0.03) `since` Keyboard.space))
+         ~ ((\x y -> x && y) <~ Keyboard.space 
+                              ~ ((second *0.03) `since` Keyboard.space))
          ~ randogen
          ~ tdelta
    
@@ -138,19 +136,36 @@ stepGame { flips, mpos, space, rando, delta }
                      
 {------------------------- RENDER ---------------------}
 
+sty_n : Style
+sty_n = { defaultStyle| color <- black}
+
+sty_f : Style
+sty_f = { defaultStyle| color <- white}
+
+message : Color -> String -> Form
+message c s = toText s  |> Text.color c
+                        |> leftAligned
+                        |> toForm
+
 -- Display function. Takes everything and spits it out as an element
 display : (Int, Int) -> Input -> GameState -> Element
 display (w,h) 
         (inout)
-        ({lstate} as game) = 
+        ({lstate, gstate} as game) = 
   let w' = toFloat w
       h' = toFloat h
-      light = if | lstate == Off -> rect w' h' |> filled black
-                 | otherwise     -> rect w' h' |> filled white
+      light = if  | lstate == Off -> rect w' h' |> filled black
+                  | otherwise     -> rect w' h' |> filled white
+      clr =   if  | lstate == Off -> white
+                  | otherwise -> black
+      str =   if  | gstate == Start -> "video game simulator\nby stepvhen"
+                  | otherwise -> ""
    in flow down [
                  --asText inout, asText game, 
-                 collage w h [light, (toForm <| plainText "video game simulator\nby stepvhen")]
+                 collage w h [light, message clr str]
                  ]
+
+{-------------------------- RUNTIME --------------------}
 
 gameState = foldp pauseGame defaultGame input
 main = lift3 display Window.dimensions input gameState

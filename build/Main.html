@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html><head><meta charset="UTF-8"><title>Main</title><script type="text/javascript" src="/home/boss/.cabal/share/Elm-0.12/elm-runtime.js"></script><script type="text/javascript">Elm.Main = Elm.Main || {};
+<html><head><meta charset="UTF-8"><title>Main</title><script type="text/javascript" src="elm-runtime.js"></script><script type="text/javascript">Elm.Main = Elm.Main || {};
 Elm.Main.make = function (_elm) {
    "use strict";
    _elm.Main = _elm.Main || {};
@@ -30,6 +30,16 @@ Elm.Main.make = function (_elm) {
    var Time = Elm.Time.make(_elm);
    var Window = Elm.Window.make(_elm);
    var _op = {};
+   var message = F2(function (c,
+   s) {
+      return Graphics.Collage.toForm(Text.leftAligned(Text.color(c)(Text.toText(s))));
+   });
+   var sty_f = _U.replace([["color"
+                           ,Color.white]],
+   Text.defaultStyle);
+   var sty_n = _U.replace([["color"
+                           ,Color.black]],
+   Text.defaultStyle);
    var GameState = F7(function (a,
    b,
    c,
@@ -59,57 +69,28 @@ Elm.Main.make = function (_elm) {
              ,timeOn: a};
    });
    var Off = {ctor: "Off"};
-   var display = F3(function (_v0,
-   inout,
-   _v1) {
-      return function () {
-         return function () {
-            switch (_v0.ctor)
-            {case "_Tuple2":
-               return function () {
-                    var h$ = Basics.toFloat(_v0._1);
-                    var w$ = Basics.toFloat(_v0._0);
-                    var light = _U.eq(_v1.lstate,
-                    Off) ? Graphics.Collage.filled(Color.black)(A2(Graphics.Collage.rect,
-                    w$,
-                    h$)) : Graphics.Collage.filled(Color.white)(A2(Graphics.Collage.rect,
-                    w$,
-                    h$));
-                    return A2(Graphics.Element.flow,
-                    Graphics.Element.down,
-                    _J.toList([A3(Graphics.Collage.collage,
-                    _v0._0,
-                    _v0._1,
-                    _J.toList([light
-                              ,Graphics.Collage.toForm(Text.plainText("video game simulator\nby stepvhen"))]))]));
-                 }();}
-            _E.Case($moduleName,
-            "between lines 146 and 153");
-         }();
-      }();
-   });
    var On = {ctor: "On"};
    var toggle = function (l) {
       return _U.eq(l,
       On) ? Off : _U.eq(l,
       Off) ? On : l;
    };
-   var stepPlayer = F4(function (_v6,
+   var stepPlayer = F4(function (_v0,
    lstate,
    delta,
    flipped) {
       return function () {
          return function () {
-            var pflips$ = flipped ? _v6.pflips + 1 : _v6.pflips;
+            var pflips$ = flipped ? _v0.pflips + 1 : _v0.pflips;
             var timeOff$ = _U.eq(lstate,
-            Off) ? _v6.timeOff + delta : _v6.timeOff;
+            Off) ? _v0.timeOff + delta : _v0.timeOff;
             var timeOn$ = _U.eq(lstate,
-            On) ? _v6.timeOn + delta : _v6.timeOn;
+            On) ? _v0.timeOn + delta : _v0.timeOn;
             return _U.replace([["timeOn"
                                ,timeOn$]
                               ,["timeOff",timeOff$]
                               ,["pflips",pflips$]],
-            _v6);
+            _v0);
          }();
       }();
    });
@@ -128,46 +109,46 @@ Elm.Main.make = function (_elm) {
                      ,paused: false
                      ,player: defaultPlayer
                      ,timer: 0.0};
-   var lightSwitch = F3(function (_v8,
+   var lightSwitch = F3(function (_v2,
    flipped,
    timed) {
       return function () {
-         return Basics.not(timed) && Basics.not(flipped) ? _v8.lstate : function () {
-            var _v10 = _v8.gstate;
-            switch (_v10.ctor)
+         return Basics.not(timed) && Basics.not(flipped) ? _v2.lstate : function () {
+            var _v4 = _v2.gstate;
+            switch (_v4.ctor)
             {case "Skill":
-               return _U.eq(_v8.lstate,
-                 Off) && timed ? toggle(_v8.lstate) : _U.eq(_v8.lstate,
-                 On) && flipped ? toggle(_v8.lstate) : _v8.lstate;
+               return _U.eq(_v2.lstate,
+                 Off) && timed ? toggle(_v2.lstate) : _U.eq(_v2.lstate,
+                 On) && flipped ? toggle(_v2.lstate) : _v2.lstate;
                case "Start":
-               return timed ? toggle(_v8.lstate) : _v8.lstate;}
-            return toggle(_v8.lstate);
+               return timed ? toggle(_v2.lstate) : _v2.lstate;}
+            return toggle(_v2.lstate);
          }();
       }();
    });
-   var stepGame = F2(function (_v11,
-   _v12) {
+   var stepGame = F2(function (_v5,
+   _v6) {
       return function () {
          return function () {
             return function () {
-               var gflips$ = _v11.flips;
-               var gstate$ = _v12.gstate;
+               var gflips$ = _v5.flips;
+               var gstate$ = _v6.gstate;
                var state$ = A3(lightSwitch,
-               _v12,
-               _U.cmp(_v11.flips,
-               _v12.gflips) > 0,
-               _U.cmp(_v12.timer,
-               _v12.grando) > 0);
+               _v6,
+               _U.cmp(_v5.flips,
+               _v6.gflips) > 0,
+               _U.cmp(_v6.timer,
+               _v6.grando) > 0);
                var timer$ = !_U.eq(state$,
-               _v12.lstate) ? 0 : _v12.timer + _v11.delta;
+               _v6.lstate) ? 0 : _v6.timer + _v5.delta;
                var grando$ = !_U.eq(state$,
-               _v12.lstate) ? _v11.rando : _v12.grando;
+               _v6.lstate) ? _v5.rando : _v6.grando;
                var player$ = !_U.eq(gstate$,
-               _v12.gstate) ? defaultPlayer : A4(stepPlayer,
-               _v12.player,
-               _v12.lstate,
-               _v11.delta,
-               !_U.eq(state$,_v12.lstate));
+               _v6.gstate) ? defaultPlayer : A4(stepPlayer,
+               _v6.player,
+               _v6.lstate,
+               _v5.delta,
+               !_U.eq(state$,_v6.lstate));
                return _U.replace([["lstate"
                                   ,state$]
                                  ,["gstate",gstate$]
@@ -175,24 +156,57 @@ Elm.Main.make = function (_elm) {
                                  ,["timer",timer$]
                                  ,["grando",grando$]
                                  ,["player",player$]],
-               _v12);
+               _v6);
             }();
          }();
       }();
    });
-   var pauseGame = F2(function (_v15,
-   _v16) {
+   var pauseGame = F2(function (_v9,
+   _v10) {
       return function () {
          return function () {
             return function () {
-               var paused$ = _v15.space ? Basics.not(_v16.paused) : _v16.paused;
+               var paused$ = _v9.space ? Basics.not(_v10.paused) : _v10.paused;
                return Basics.not(paused$) ? A2(stepGame,
-               _v15,
+               _v9,
                _U.replace([["paused",paused$]],
-               _v16)) : _U.replace([["paused"
+               _v10)) : _U.replace([["paused"
                                     ,paused$]],
-               _v16);
+               _v10);
             }();
+         }();
+      }();
+   });
+   var display = F3(function (_v13,
+   inout,
+   _v14) {
+      return function () {
+         return function () {
+            switch (_v13.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var str = _U.eq(_v14.gstate,
+                    Start) ? "video game simulator\nby stepvhen" : "";
+                    var clr = _U.eq(_v14.lstate,
+                    Off) ? Color.white : Color.black;
+                    var h$ = Basics.toFloat(_v13._1);
+                    var w$ = Basics.toFloat(_v13._0);
+                    var light = _U.eq(_v14.lstate,
+                    Off) ? Graphics.Collage.filled(Color.black)(A2(Graphics.Collage.rect,
+                    w$,
+                    h$)) : Graphics.Collage.filled(Color.white)(A2(Graphics.Collage.rect,
+                    w$,
+                    h$));
+                    return A2(Graphics.Element.flow,
+                    Graphics.Element.down,
+                    _J.toList([A3(Graphics.Collage.collage,
+                    _v13._0,
+                    _v13._1,
+                    _J.toList([light
+                              ,A2(message,clr,str)]))]));
+                 }();}
+            _E.Case($moduleName,
+            "between lines 159 and 170");
          }();
       }();
    });
@@ -250,7 +264,9 @@ Elm.Main.make = function (_elm) {
    Mouse.position),
    A2(Signal._op["~"],
    A2(Signal._op["<~"],
-   spacebar,
+   F2(function (x,y) {
+      return x && y;
+   }),
    Keyboard.space),
    A2(Time.since,
    Time.second * 3.0e-2,
@@ -280,6 +296,9 @@ Elm.Main.make = function (_elm) {
                       ,stepPlayer: stepPlayer
                       ,pauseGame: pauseGame
                       ,stepGame: stepGame
+                      ,sty_n: sty_n
+                      ,sty_f: sty_f
+                      ,message: message
                       ,display: display
                       ,gameState: gameState
                       ,main: main
