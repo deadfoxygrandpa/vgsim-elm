@@ -189,6 +189,8 @@ Elm.VGrender.make = function (_elm) {
    Graphics.Collage = Elm.Graphics.Collage.make(_elm);
    var Graphics = Graphics || {};
    Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Input = Elm.Graphics.Input.make(_elm);
    var List = Elm.List.make(_elm);
    var Maybe = Elm.Maybe.make(_elm);
    var Native = Native || {};
@@ -199,6 +201,109 @@ Elm.VGrender.make = function (_elm) {
    var Time = Elm.Time.make(_elm);
    var VGmodel = Elm.VGmodel.make(_elm);
    var _op = {};
+   var modeButton = F6(function (bg,
+   fg,
+   w,
+   h,
+   mode,
+   name) {
+      return function () {
+         var btn = function (clr) {
+            return Graphics.Element.color(clr)(A3(Graphics.Element.container,
+            w,
+            h,
+            Graphics.Element.middle)(Text.centered(Text.color(fg)(Text.toText(name)))));
+         };
+         return A5(Graphics.Input.customButton,
+         VGmodel.i_state.handle,
+         mode,
+         btn(bg),
+         btn(Color.gray),
+         btn(Color.darkGray));
+      }();
+   });
+   var skl_btn = function (s) {
+      return function () {
+         var fg = _U.eq(s,
+         VGmodel.Off) ? Color.white : Color.black;
+         var bg = _U.eq(s,
+         VGmodel.Off) ? Color.black : Color.white;
+         return A6(modeButton,
+         bg,
+         fg,
+         73,
+         20,
+         VGmodel.Skill,
+         "skill");
+      }();
+   };
+   var sur_btn = function (s) {
+      return function () {
+         var fg = _U.eq(s,
+         VGmodel.Off) ? Color.white : Color.black;
+         var bg = _U.eq(s,
+         VGmodel.Off) ? Color.black : Color.white;
+         return A6(modeButton,
+         bg,
+         fg,
+         73,
+         20,
+         VGmodel.Survival,
+         "survive");
+      }();
+   };
+   var exp_btn = function (s) {
+      return function () {
+         var fg = _U.eq(s,
+         VGmodel.Off) ? Color.white : Color.black;
+         var bg = _U.eq(s,
+         VGmodel.Off) ? Color.black : Color.white;
+         return A6(modeButton,
+         bg,
+         fg,
+         73,
+         20,
+         VGmodel.Explore,
+         "explore");
+      }();
+   };
+   var snd_btn = function (s) {
+      return function () {
+         var fg = _U.eq(s,
+         VGmodel.Off) ? Color.white : Color.black;
+         var bg = _U.eq(s,
+         VGmodel.Off) ? Color.black : Color.white;
+         return A6(modeButton,
+         bg,
+         fg,
+         73,
+         20,
+         VGmodel.Sandbox,
+         "sandbox");
+      }();
+   };
+   var att_btn = function (s) {
+      return function () {
+         var fg = _U.eq(s,
+         VGmodel.Off) ? Color.white : Color.black;
+         var bg = _U.eq(s,
+         VGmodel.Off) ? Color.black : Color.white;
+         return A6(modeButton,
+         bg,
+         fg,
+         73,
+         20,
+         VGmodel.Attract,
+         "attract");
+      }();
+   };
+   var modeSelect = function (s) {
+      return _J.toList([skl_btn(s)
+                       ,sur_btn(s)
+                       ,exp_btn(s)
+                       ,snd_btn(s)
+                       ,att_btn(s)]);
+   };
    var message = F2(function (c,
    s) {
       return Graphics.Collage.toForm(Text.leftAligned(Text.color(c)(Text.toText(s))));
@@ -227,6 +332,9 @@ Elm.VGrender.make = function (_elm) {
                     Graphics.Element.down,
                     _J.toList([Text.asText(inout)
                               ,Text.asText(_v1)
+                              ,A2(Graphics.Element.flow,
+                              Graphics.Element.right,
+                              modeSelect(_v1.lstate))
                               ,A3(Graphics.Collage.collage,
                               _v0._0,
                               _v0._1,
@@ -234,7 +342,7 @@ Elm.VGrender.make = function (_elm) {
                                         ,A2(message,clr,str)]))]));
                  }();}
             _E.Case($moduleName,
-            "between lines 22 and 33");
+            "between lines 65 and 77");
          }();
       }();
    });
@@ -248,6 +356,13 @@ Elm.VGrender.make = function (_elm) {
                           ,sty_n: sty_n
                           ,sty_f: sty_f
                           ,message: message
+                          ,modeButton: modeButton
+                          ,skl_btn: skl_btn
+                          ,sur_btn: sur_btn
+                          ,exp_btn: exp_btn
+                          ,snd_btn: snd_btn
+                          ,att_btn: att_btn
+                          ,modeSelect: modeSelect
                           ,display: display};
    return _elm.VGrender.values;
 };Elm.VGmodel = Elm.VGmodel || {};
