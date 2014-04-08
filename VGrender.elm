@@ -1,7 +1,6 @@
 module VGrender where
 
 import Text
-import VGinput (..)
 import VGmodel (..)
 
 sty_n : Style

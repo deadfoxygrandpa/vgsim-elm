@@ -1,6 +1,5 @@
 module VGupdate where
 
-import VGinput (..)
 import VGmodel (..)
 
 

@@ -25,7 +25,6 @@ Elm.Main.make = function (_elm) {
    var String = Elm.String.make(_elm);
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
-   var VGinput = Elm.VGinput.make(_elm);
    var VGmodel = Elm.VGmodel.make(_elm);
    var VGrender = Elm.VGrender.make(_elm);
    var VGupdate = Elm.VGupdate.make(_elm);
@@ -33,13 +32,13 @@ Elm.Main.make = function (_elm) {
    var gameState = A3(Signal.foldp,
    VGupdate.pauseGame,
    VGmodel.defaultGame,
-   VGinput.input);
+   VGmodel.input);
    var main = A2(Signal._op["~"],
    A2(Signal._op["<~"],
    VGrender.display({ctor: "_Tuple2"
                     ,_0: 300
                     ,_1: 300}),
-   VGinput.input),
+   VGmodel.input),
    gameState);
    _elm.Main.values = {_op: _op
                       ,gameState: gameState
@@ -71,7 +70,6 @@ Elm.VGupdate.make = function (_elm) {
    var String = Elm.String.make(_elm);
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
-   var VGinput = Elm.VGinput.make(_elm);
    var VGmodel = Elm.VGmodel.make(_elm);
    var _op = {};
    var stepPlayer = F4(function (_v0,
@@ -199,7 +197,6 @@ Elm.VGrender.make = function (_elm) {
    var String = Elm.String.make(_elm);
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
-   var VGinput = Elm.VGinput.make(_elm);
    var VGmodel = Elm.VGmodel.make(_elm);
    var _op = {};
    var message = F2(function (c,
@@ -237,7 +234,7 @@ Elm.VGrender.make = function (_elm) {
                                         ,A2(message,clr,str)]))]));
                  }();}
             _E.Case($moduleName,
-            "between lines 23 and 34");
+            "between lines 22 and 33");
          }();
       }();
    });
@@ -253,90 +250,6 @@ Elm.VGrender.make = function (_elm) {
                           ,message: message
                           ,display: display};
    return _elm.VGrender.values;
-};Elm.VGinput = Elm.VGinput || {};
-Elm.VGinput.make = function (_elm) {
-   "use strict";
-   _elm.VGinput = _elm.VGinput || {};
-   if (_elm.VGinput.values)
-   return _elm.VGinput.values;
-   var _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   _E = _N.Error.make(_elm),
-   _J = _N.JavaScript.make(_elm),
-   $moduleName = "VGinput";
-   var Basics = Elm.Basics.make(_elm);
-   var Color = Elm.Color.make(_elm);
-   var Graphics = Graphics || {};
-   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
-   var Graphics = Graphics || {};
-   Graphics.Element = Elm.Graphics.Element.make(_elm);
-   var Keyboard = Elm.Keyboard.make(_elm);
-   var List = Elm.List.make(_elm);
-   var Maybe = Elm.Maybe.make(_elm);
-   var Mouse = Elm.Mouse.make(_elm);
-   var Native = Native || {};
-   Native.Ports = Elm.Native.Ports.make(_elm);
-   var Random = Elm.Random.make(_elm);
-   var Signal = Elm.Signal.make(_elm);
-   var String = Elm.String.make(_elm);
-   var Text = Elm.Text.make(_elm);
-   var Time = Elm.Time.make(_elm);
-   var _op = {};
-   var spacebar = F2(function (hit,
-   after) {
-      return hit && after;
-   });
-   var randSig = Signal.merge(Time.every(Time.second))(A2(Signal._op["<~"],
-   Basics.toFloat,
-   Signal.count(Mouse.clicks)));
-   var randogen = Signal.lift(function (x) {
-      return x * 4 + 0.51;
-   })(Random.$float(randSig));
-   var myfps = 20;
-   var tdelta = A2(Signal._op["<~"],
-   Time.inSeconds,
-   Time.fps(myfps));
-   var Input = F5(function (a,
-   b,
-   c,
-   d,
-   e) {
-      return {_: {}
-             ,delta: e
-             ,flips: a
-             ,mpos: b
-             ,rando: d
-             ,space: c};
-   });
-   var input = Signal.sampleOn(tdelta)(A2(Signal._op["~"],
-   A2(Signal._op["~"],
-   A2(Signal._op["~"],
-   A2(Signal._op["~"],
-   A2(Signal._op["<~"],
-   Input,
-   Signal.count(Mouse.clicks)),
-   Mouse.position),
-   A2(Signal._op["~"],
-   A2(Signal._op["<~"],
-   F2(function (x,y) {
-      return x && y;
-   }),
-   Keyboard.space),
-   A2(Time.since,
-   Time.second / myfps,
-   Keyboard.space))),
-   randogen),
-   tdelta));
-   _elm.VGinput.values = {_op: _op
-                         ,myfps: myfps
-                         ,tdelta: tdelta
-                         ,randogen: randogen
-                         ,randSig: randSig
-                         ,spacebar: spacebar
-                         ,input: input
-                         ,Input: Input};
-   return _elm.VGinput.values;
 };Elm.VGmodel = Elm.VGmodel || {};
 Elm.VGmodel.make = function (_elm) {
    "use strict";
@@ -355,10 +268,15 @@ Elm.VGmodel.make = function (_elm) {
    Graphics.Collage = Elm.Graphics.Collage.make(_elm);
    var Graphics = Graphics || {};
    Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Input = Elm.Graphics.Input.make(_elm);
+   var Keyboard = Elm.Keyboard.make(_elm);
    var List = Elm.List.make(_elm);
    var Maybe = Elm.Maybe.make(_elm);
+   var Mouse = Elm.Mouse.make(_elm);
    var Native = Native || {};
    Native.Ports = Elm.Native.Ports.make(_elm);
+   var Random = Elm.Random.make(_elm);
    var Signal = Elm.Signal.make(_elm);
    var String = Elm.String.make(_elm);
    var Text = Elm.Text.make(_elm);
@@ -409,7 +327,64 @@ Elm.VGmodel.make = function (_elm) {
                      ,paused: false
                      ,player: defaultPlayer
                      ,timer: 0.0};
+   var spacebar = F2(function (hit,
+   after) {
+      return hit && after;
+   });
+   var randSig = Signal.merge(Time.every(Time.second))(A2(Signal._op["<~"],
+   Basics.toFloat,
+   Signal.count(Mouse.clicks)));
+   var randogen = Signal.lift(function (x) {
+      return x * 4 + 0.51;
+   })(Random.$float(randSig));
+   var myfps = 20;
+   var tdelta = A2(Signal._op["<~"],
+   Time.inSeconds,
+   Time.fps(myfps));
+   var i_state = Graphics.Input.input(Start);
+   var Input = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
+      return {_: {}
+             ,delta: e
+             ,flips: a
+             ,istate: f
+             ,mpos: b
+             ,rando: d
+             ,space: c};
+   });
+   var input = Signal.sampleOn(tdelta)(A2(Signal._op["~"],
+   A2(Signal._op["~"],
+   A2(Signal._op["~"],
+   A2(Signal._op["~"],
+   A2(Signal._op["~"],
+   A2(Signal._op["<~"],
+   Input,
+   Signal.count(Mouse.clicks)),
+   Mouse.position),
+   A2(Signal._op["~"],
+   A2(Signal._op["<~"],
+   F2(function (x,y) {
+      return x && y;
+   }),
+   Keyboard.space),
+   A2(Time.since,
+   Time.second / myfps,
+   Keyboard.space))),
+   randogen),
+   tdelta),
+   i_state.signal));
    _elm.VGmodel.values = {_op: _op
+                         ,i_state: i_state
+                         ,myfps: myfps
+                         ,tdelta: tdelta
+                         ,randogen: randogen
+                         ,randSig: randSig
+                         ,spacebar: spacebar
+                         ,input: input
                          ,defaultPlayer: defaultPlayer
                          ,defaultGame: defaultGame
                          ,Start: Start
@@ -421,6 +396,7 @@ Elm.VGmodel.make = function (_elm) {
                          ,Attract: Attract
                          ,On: On
                          ,Off: Off
+                         ,Input: Input
                          ,Player: Player
                          ,GameState: GameState};
    return _elm.VGmodel.values;

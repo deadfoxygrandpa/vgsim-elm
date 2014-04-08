@@ -1,4 +1,3 @@
-import VGinput (..)
 import VGmodel (..)
 import VGupdate (..)
 import VGrender (..)
