@@ -12,7 +12,7 @@ sty_f = { defaultStyle| color <- white}
 
 message : Color -> String -> Form
 message c s = toText s  |> Text.color c
-                        |> leftAligned
+                        |> centered
                         |> toForm
 
 modeButton : Color -> Color -> Int -> Int -> Gstate -> String -> Element
@@ -22,6 +22,10 @@ modeButton bg fg w h mode name =
                             |> container w h middle
                             |> color clr
   in  I.customButton i_state.handle mode (btn bg) (btn gray) (btn darkGray)
+
+title s = 
+  let clr = if s == On then black else white
+   in message clr "video game simulator\nby stepvhen"        
 
 skl_btn s = 
   let bg = if s == Off then black else white
@@ -48,14 +52,15 @@ att_btn s =
       fg = if s == Off then white else black
    in modeButton bg fg 73 20 Attract "attract"
               
-
+modeSelect : Lstate -> Form
 modeSelect s = 
-  [ skl_btn s
-  , sur_btn s
-  , exp_btn s
-  , snd_btn s
-  , att_btn s
-  ]
+  [ title s |> moveY 80
+  , skl_btn s |> toForm |> moveY  40 
+  , sur_btn s |> toForm |> moveY  20
+  , exp_btn s |> toForm 
+  , snd_btn s |> toForm |> moveY -20
+  , att_btn s |> toForm |> moveY -40
+  ] |> group |> moveY -30
               
 -- Display function. Takes everything and spits it out as an element
 display : (Int, Int) -> Input -> GameState -> Element
@@ -66,13 +71,8 @@ display (w,h)
       h' = toFloat h
       light = if  | lstate == Off -> rect w' h' |> filled black
                   | otherwise     -> rect w' h' |> filled white
-      clr =   if  | lstate == Off -> white
-                  | otherwise -> black
-      str =   if  | gstate == Start -> "video game simulator\nby stepvhen"
-                  | otherwise -> ""
    in flow down [
-                 asText inout, asText game, 
-                 (flow right (modeSelect lstate)),
-                 collage w h [light, message clr str]
+                 --asText inout, asText game, 
+                 collage w h [light, (modeSelect lstate)]
                  ]
 

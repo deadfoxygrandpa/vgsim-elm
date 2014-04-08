@@ -297,17 +297,27 @@ Elm.VGrender.make = function (_elm) {
          "attract");
       }();
    };
-   var modeSelect = function (s) {
-      return _J.toList([skl_btn(s)
-                       ,sur_btn(s)
-                       ,exp_btn(s)
-                       ,snd_btn(s)
-                       ,att_btn(s)]);
-   };
    var message = F2(function (c,
    s) {
-      return Graphics.Collage.toForm(Text.leftAligned(Text.color(c)(Text.toText(s))));
+      return Graphics.Collage.toForm(Text.centered(Text.color(c)(Text.toText(s))));
    });
+   var title = function (s) {
+      return function () {
+         var clr = _U.eq(s,
+         VGmodel.On) ? Color.black : Color.white;
+         return A2(message,
+         clr,
+         "video game simulator\nby stepvhen");
+      }();
+   };
+   var modeSelect = function (s) {
+      return Graphics.Collage.moveY(-30)(Graphics.Collage.group(_J.toList([Graphics.Collage.moveY(80)(title(s))
+                                                                          ,Graphics.Collage.moveY(40)(Graphics.Collage.toForm(skl_btn(s)))
+                                                                          ,Graphics.Collage.moveY(20)(Graphics.Collage.toForm(sur_btn(s)))
+                                                                          ,Graphics.Collage.toForm(exp_btn(s))
+                                                                          ,Graphics.Collage.moveY(-20)(Graphics.Collage.toForm(snd_btn(s)))
+                                                                          ,Graphics.Collage.moveY(-40)(Graphics.Collage.toForm(att_btn(s)))])));
+   };
    var display = F3(function (_v0,
    inout,
    _v1) {
@@ -316,10 +326,6 @@ Elm.VGrender.make = function (_elm) {
             switch (_v0.ctor)
             {case "_Tuple2":
                return function () {
-                    var str = _U.eq(_v1.gstate,
-                    VGmodel.Start) ? "video game simulator\nby stepvhen" : "";
-                    var clr = _U.eq(_v1.lstate,
-                    VGmodel.Off) ? Color.white : Color.black;
                     var h$ = Basics.toFloat(_v0._1);
                     var w$ = Basics.toFloat(_v0._0);
                     var light = _U.eq(_v1.lstate,
@@ -330,19 +336,14 @@ Elm.VGrender.make = function (_elm) {
                     h$));
                     return A2(Graphics.Element.flow,
                     Graphics.Element.down,
-                    _J.toList([Text.asText(inout)
-                              ,Text.asText(_v1)
-                              ,A2(Graphics.Element.flow,
-                              Graphics.Element.right,
-                              modeSelect(_v1.lstate))
-                              ,A3(Graphics.Collage.collage,
-                              _v0._0,
-                              _v0._1,
-                              _J.toList([light
-                                        ,A2(message,clr,str)]))]));
+                    _J.toList([A3(Graphics.Collage.collage,
+                    _v0._0,
+                    _v0._1,
+                    _J.toList([light
+                              ,modeSelect(_v1.lstate)]))]));
                  }();}
             _E.Case($moduleName,
-            "between lines 65 and 77");
+            "between lines 70 and 77");
          }();
       }();
    });
@@ -357,6 +358,7 @@ Elm.VGrender.make = function (_elm) {
                           ,sty_f: sty_f
                           ,message: message
                           ,modeButton: modeButton
+                          ,title: title
                           ,skl_btn: skl_btn
                           ,sur_btn: sur_btn
                           ,exp_btn: exp_btn
