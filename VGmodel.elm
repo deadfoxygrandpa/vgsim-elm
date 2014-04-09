@@ -6,7 +6,6 @@ import Keyboard
 import Random
 {--------------- INPUT -------------}
 type Input = { flips:Int
-             , mpos:(Int, Int)
              , space:Bool
              , rando:Time
              , delta:Time 
@@ -14,6 +13,9 @@ type Input = { flips:Int
 
 i_state : I.Input Gstate
 i_state = I.input Start
+
+ilight : I.Input Lstate
+ilight = I.input On
 
 myfps = 20
 
@@ -26,13 +28,9 @@ randogen = Random.float randSig |> lift (\x -> (x * 4) + 0.51 )
 randSig : Signal Time
 randSig = merge (every second) <| toFloat <~ count Mouse.clicks
 
-spacebar : Bool -> Bool -> Bool
-spacebar hit after = hit && after
-
 input : Signal Input
 input = sampleOn tdelta <| 
   Input <~ count Mouse.clicks
-         ~ Mouse.position
          ~ ((\x y -> x && y) <~ Keyboard.space 
                               ~ ((second / myfps) `since` Keyboard.space))
          ~ randogen

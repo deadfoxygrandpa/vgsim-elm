@@ -103,12 +103,22 @@ Elm.VGupdate.make = function (_elm) {
          return Basics.not(timed) && Basics.not(flipped) ? _v2.lstate : function () {
             var _v4 = _v2.gstate;
             switch (_v4.ctor)
-            {case "Skill":
+            {case "Attract":
+               return timed ? toggle(_v2.lstate) : _v2.lstate;
+               case "Explore":
+               return flipped ? toggle(_v2.lstate) : _v2.lstate;
+               case "Sandbox":
+               return timed ? toggle(_v2.lstate) : flipped ? toggle(_v2.lstate) : _v2.lstate;
+               case "Skill":
                return _U.eq(_v2.lstate,
                  VGmodel.Off) && timed ? toggle(_v2.lstate) : _U.eq(_v2.lstate,
                  VGmodel.On) && flipped ? toggle(_v2.lstate) : _v2.lstate;
                case "Start":
-               return timed ? toggle(_v2.lstate) : _v2.lstate;}
+               return timed ? toggle(_v2.lstate) : _v2.lstate;
+               case "Survival":
+               return _U.eq(_v2.lstate,
+                 VGmodel.On) && timed ? toggle(_v2.lstate) : _U.eq(_v2.lstate,
+                 VGmodel.Off) && flipped ? toggle(_v2.lstate) : _v2.lstate;}
             return toggle(_v2.lstate);
          }();
       }();
@@ -119,7 +129,7 @@ Elm.VGupdate.make = function (_elm) {
          return function () {
             return function () {
                var gflips$ = _v5.flips;
-               var gstate$ = _v6.gstate;
+               var gstate$ = _v5.istate;
                var state$ = A3(lightSwitch,
                _v6,
                _U.cmp(_v5.flips,
@@ -157,6 +167,10 @@ Elm.VGupdate.make = function (_elm) {
                return Basics.not(paused$) ? A2(stepGame,
                _v9,
                _U.replace([["paused",paused$]],
+               _v10)) : _U.eq(_v9.istate,
+               VGmodel.Start) ? stepGame(_v9)(_U.replace([["gstate"
+                                                          ,_v9.istate]
+                                                         ,["paused",false]],
                _v10)) : _U.replace([["paused"
                                     ,paused$]],
                _v10);
@@ -208,115 +222,129 @@ Elm.VGrender.make = function (_elm) {
    mode,
    name) {
       return function () {
-         var btn = function (clr) {
-            return Graphics.Element.color(clr)(A3(Graphics.Element.container,
+         var btn = F2(function (b$,
+         f$) {
+            return Graphics.Element.color(b$)(A3(Graphics.Element.container,
             w,
             h,
-            Graphics.Element.middle)(Text.centered(Text.color(fg)(Text.toText(name)))));
-         };
+            Graphics.Element.middle)(Text.centered(Text.color(f$)(Text.toText(name)))));
+         });
          return A5(Graphics.Input.customButton,
          VGmodel.i_state.handle,
          mode,
-         btn(bg),
-         btn(Color.gray),
-         btn(Color.darkGray));
+         A2(btn,bg,fg),
+         A2(btn,Color.gray,Color.black),
+         A2(btn,
+         Color.darkGray,
+         Color.black));
       }();
    });
-   var skl_btn = function (s) {
-      return function () {
-         var fg = _U.eq(s,
-         VGmodel.Off) ? Color.white : Color.black;
-         var bg = _U.eq(s,
-         VGmodel.Off) ? Color.black : Color.white;
-         return A6(modeButton,
-         bg,
-         fg,
-         73,
-         20,
-         VGmodel.Skill,
-         "skill");
-      }();
-   };
-   var sur_btn = function (s) {
-      return function () {
-         var fg = _U.eq(s,
-         VGmodel.Off) ? Color.white : Color.black;
-         var bg = _U.eq(s,
-         VGmodel.Off) ? Color.black : Color.white;
-         return A6(modeButton,
-         bg,
-         fg,
-         73,
-         20,
-         VGmodel.Survival,
-         "survive");
-      }();
-   };
-   var exp_btn = function (s) {
-      return function () {
-         var fg = _U.eq(s,
-         VGmodel.Off) ? Color.white : Color.black;
-         var bg = _U.eq(s,
-         VGmodel.Off) ? Color.black : Color.white;
-         return A6(modeButton,
-         bg,
-         fg,
-         73,
-         20,
-         VGmodel.Explore,
-         "explore");
-      }();
-   };
-   var snd_btn = function (s) {
-      return function () {
-         var fg = _U.eq(s,
-         VGmodel.Off) ? Color.white : Color.black;
-         var bg = _U.eq(s,
-         VGmodel.Off) ? Color.black : Color.white;
-         return A6(modeButton,
-         bg,
-         fg,
-         73,
-         20,
-         VGmodel.Sandbox,
-         "sandbox");
-      }();
-   };
-   var att_btn = function (s) {
-      return function () {
-         var fg = _U.eq(s,
-         VGmodel.Off) ? Color.white : Color.black;
-         var bg = _U.eq(s,
-         VGmodel.Off) ? Color.black : Color.white;
-         return A6(modeButton,
-         bg,
-         fg,
-         73,
-         20,
-         VGmodel.Attract,
-         "attract");
-      }();
-   };
-   var message = F2(function (c,
-   s) {
-      return Graphics.Collage.toForm(Text.centered(Text.color(c)(Text.toText(s))));
+   var title_btn = F2(function (bg,
+   fg) {
+      return A6(modeButton,
+      bg,
+      fg,
+      158,
+      40,
+      VGmodel.Start,
+      "video game simulator\nby stepvhen");
    });
-   var title = function (s) {
-      return function () {
-         var clr = _U.eq(s,
-         VGmodel.On) ? Color.black : Color.white;
-         return A2(message,
-         clr,
-         "video game simulator\nby stepvhen");
-      }();
-   };
+   var skl_btn = F2(function (bg,
+   fg) {
+      return A6(modeButton,
+      bg,
+      fg,
+      73,
+      20,
+      VGmodel.Skill,
+      "skill");
+   });
+   var sur_btn = F2(function (bg,
+   fg) {
+      return A6(modeButton,
+      bg,
+      fg,
+      73,
+      20,
+      VGmodel.Survival,
+      "survive");
+   });
+   var exp_btn = F2(function (bg,
+   fg) {
+      return A6(modeButton,
+      bg,
+      fg,
+      73,
+      20,
+      VGmodel.Explore,
+      "explore");
+   });
+   var snd_btn = F2(function (bg,
+   fg) {
+      return A6(modeButton,
+      bg,
+      fg,
+      73,
+      20,
+      VGmodel.Sandbox,
+      "sandbox");
+   });
+   var att_btn = F2(function (bg,
+   fg) {
+      return A6(modeButton,
+      bg,
+      fg,
+      73,
+      20,
+      VGmodel.Attract,
+      "attract");
+   });
    var modeSelect = function (s) {
-      return Graphics.Collage.moveY(-30)(Graphics.Collage.group(_J.toList([Graphics.Collage.moveY(80)(title(s))
-                                                                          ,Graphics.Collage.moveY(40)(Graphics.Collage.toForm(skl_btn(s)))
-                                                                          ,Graphics.Collage.moveY(20)(Graphics.Collage.toForm(sur_btn(s)))
-                                                                          ,Graphics.Collage.toForm(exp_btn(s))
-                                                                          ,Graphics.Collage.moveY(-20)(Graphics.Collage.toForm(snd_btn(s)))
-                                                                          ,Graphics.Collage.moveY(-40)(Graphics.Collage.toForm(att_btn(s)))])));
+      return function () {
+         var fg = _U.eq(s,
+         VGmodel.On) ? Color.black : Color.white;
+         var bg = _U.eq(s,
+         VGmodel.On) ? Color.white : Color.black;
+         return Graphics.Collage.moveY(-30)(Graphics.Collage.group(_J.toList([Graphics.Collage.moveY(80)(Graphics.Collage.toForm(A2(title_btn,
+                                                                             bg,
+                                                                             fg)))
+                                                                             ,Graphics.Collage.moveY(40)(Graphics.Collage.toForm(A2(skl_btn,
+                                                                             bg,
+                                                                             fg)))
+                                                                             ,Graphics.Collage.moveY(20)(Graphics.Collage.toForm(A2(sur_btn,
+                                                                             bg,
+                                                                             fg)))
+                                                                             ,Graphics.Collage.toForm(A2(exp_btn,
+                                                                             bg,
+                                                                             fg))
+                                                                             ,Graphics.Collage.moveY(-20)(Graphics.Collage.toForm(A2(snd_btn,
+                                                                             bg,
+                                                                             fg)))
+                                                                             ,Graphics.Collage.moveY(-40)(Graphics.Collage.toForm(A2(att_btn,
+                                                                             bg,
+                                                                             fg)))])));
+      }();
+   };
+   var pause_title = F2(function (bg,
+   fg) {
+      return A6(modeButton,
+      bg,
+      fg,
+      98,
+      40,
+      VGmodel.Start,
+      "pause menu\nreturn to title?");
+   });
+   var pauseMenu = function (s) {
+      return function () {
+         var fg = _U.eq(s,
+         VGmodel.On) ? Color.black : Color.white;
+         var bg = _U.eq(s,
+         VGmodel.On) ? Color.white : Color.black;
+         return Graphics.Collage.toForm(A2(pause_title,
+         bg,
+         fg));
+      }();
    };
    var display = F3(function (_v0,
    inout,
@@ -334,18 +362,35 @@ Elm.VGrender.make = function (_elm) {
                     h$)) : Graphics.Collage.filled(Color.white)(A2(Graphics.Collage.rect,
                     w$,
                     h$));
+                    var objects = _U.eq(_v1.gstate,
+                    VGmodel.Start) ? {ctor: "::"
+                                     ,_0: light
+                                     ,_1: {ctor: "::"
+                                          ,_0: modeSelect(_v1.lstate)
+                                          ,_1: _J.toList([])}} : _v1.paused ? {ctor: "::"
+                                                                              ,_0: light
+                                                                              ,_1: {ctor: "::"
+                                                                                   ,_0: pauseMenu(_v1.lstate)
+                                                                                   ,_1: _J.toList([])}} : {ctor: "::"
+                                                                                                          ,_0: light
+                                                                                                          ,_1: _J.toList([])};
                     return A2(Graphics.Element.flow,
                     Graphics.Element.down,
-                    _J.toList([A3(Graphics.Collage.collage,
-                    _v0._0,
-                    _v0._1,
-                    _J.toList([light
-                              ,modeSelect(_v1.lstate)]))]));
+                    _J.toList([Text.asText(inout)
+                              ,Text.asText(_v1)
+                              ,A3(Graphics.Collage.collage,
+                              _v0._0,
+                              _v0._1,
+                              objects)]));
                  }();}
             _E.Case($moduleName,
-            "between lines 70 and 77");
+            "between lines 71 and 81");
          }();
       }();
+   });
+   var message = F2(function (c,
+   s) {
+      return Graphics.Collage.toForm(Text.centered(Text.color(c)(Text.toText(s))));
    });
    var sty_f = _U.replace([["color"
                            ,Color.white]],
@@ -358,12 +403,14 @@ Elm.VGrender.make = function (_elm) {
                           ,sty_f: sty_f
                           ,message: message
                           ,modeButton: modeButton
-                          ,title: title
+                          ,title_btn: title_btn
                           ,skl_btn: skl_btn
                           ,sur_btn: sur_btn
                           ,exp_btn: exp_btn
                           ,snd_btn: snd_btn
                           ,att_btn: att_btn
+                          ,pause_title: pause_title
+                          ,pauseMenu: pauseMenu
                           ,modeSelect: modeSelect
                           ,display: display};
    return _elm.VGrender.values;
@@ -444,10 +491,6 @@ Elm.VGmodel.make = function (_elm) {
                      ,paused: false
                      ,player: defaultPlayer
                      ,timer: 0.0};
-   var spacebar = F2(function (hit,
-   after) {
-      return hit && after;
-   });
    var randSig = Signal.merge(Time.every(Time.second))(A2(Signal._op["<~"],
    Basics.toFloat,
    Signal.count(Mouse.clicks)));
@@ -458,30 +501,27 @@ Elm.VGmodel.make = function (_elm) {
    var tdelta = A2(Signal._op["<~"],
    Time.inSeconds,
    Time.fps(myfps));
+   var ilight = Graphics.Input.input(On);
    var i_state = Graphics.Input.input(Start);
-   var Input = F6(function (a,
+   var Input = F5(function (a,
    b,
    c,
    d,
-   e,
-   f) {
+   e) {
       return {_: {}
-             ,delta: e
+             ,delta: d
              ,flips: a
-             ,istate: f
-             ,mpos: b
-             ,rando: d
-             ,space: c};
+             ,istate: e
+             ,rando: c
+             ,space: b};
    });
    var input = Signal.sampleOn(tdelta)(A2(Signal._op["~"],
-   A2(Signal._op["~"],
    A2(Signal._op["~"],
    A2(Signal._op["~"],
    A2(Signal._op["~"],
    A2(Signal._op["<~"],
    Input,
    Signal.count(Mouse.clicks)),
-   Mouse.position),
    A2(Signal._op["~"],
    A2(Signal._op["<~"],
    F2(function (x,y) {
@@ -496,11 +536,11 @@ Elm.VGmodel.make = function (_elm) {
    i_state.signal));
    _elm.VGmodel.values = {_op: _op
                          ,i_state: i_state
+                         ,ilight: ilight
                          ,myfps: myfps
                          ,tdelta: tdelta
                          ,randogen: randogen
                          ,randSig: randSig
-                         ,spacebar: spacebar
                          ,input: input
                          ,defaultPlayer: defaultPlayer
                          ,defaultGame: defaultGame

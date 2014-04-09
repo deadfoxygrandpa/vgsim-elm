@@ -17,62 +17,66 @@ message c s = toText s  |> Text.color c
 
 modeButton : Color -> Color -> Int -> Int -> Gstate -> String -> Element
 modeButton bg fg w h mode name =
-  let btn clr = toText name |> Text.color fg 
-                            |> centered
-                            |> container w h middle
-                            |> color clr
-  in  I.customButton i_state.handle mode (btn bg) (btn gray) (btn darkGray)
+  let btn b' f' = toText name |> Text.color f' 
+                              |> centered
+                              |> container w h middle
+                              |> color b'
+  in  I.customButton i_state.handle mode (btn bg fg) (btn gray black) (btn
+  darkGray black)
 
-title s = 
-  let clr = if s == On then black else white
-   in message clr "video game simulator\nby stepvhen"        
+title_btn bg fg = 
+   modeButton bg fg 158 40 Start "video game simulator\nby stepvhen"        
 
-skl_btn s = 
-  let bg = if s == Off then black else white
-      fg = if s == Off then white else black
-   in modeButton bg fg 73 20 Skill "skill"
+skl_btn bg fg = 
+   modeButton bg fg 73 20 Skill "skill"
               
-sur_btn s = 
-  let bg = if s == Off then black else white
-      fg = if s == Off then white else black
-   in modeButton bg fg 73 20 Survival "survive"
+sur_btn bg fg = 
+   modeButton bg fg 73 20 Survival "survive"
               
-exp_btn s = 
-  let bg = if s == Off then black else white
-      fg = if s == Off then white else black
-   in modeButton bg fg 73 20 Explore "explore"
+exp_btn bg fg = 
+   modeButton bg fg 73 20 Explore "explore"
               
-snd_btn s = 
-  let bg = if s == Off then black else white
-      fg = if s == Off then white else black
-   in modeButton bg fg 73 20 Sandbox "sandbox"
+snd_btn bg fg = 
+   modeButton bg fg 73 20 Sandbox "sandbox"
               
-att_btn s = 
-  let bg = if s == Off then black else white
-      fg = if s == Off then white else black
-   in modeButton bg fg 73 20 Attract "attract"
+att_btn bg fg = 
+   modeButton bg fg 73 20 Attract "attract"
               
+pause_title bg fg = 
+  modeButton bg fg 98 40 Start "pause menu\nreturn to title?"
+
+pauseMenu : Lstate -> Form
+pauseMenu s = 
+  let bg = if s == On then white else black
+      fg = if s == On then black else white
+   in pause_title bg fg |> toForm
+
 modeSelect : Lstate -> Form
 modeSelect s = 
-  [ title s |> moveY 80
-  , skl_btn s |> toForm |> moveY  40 
-  , sur_btn s |> toForm |> moveY  20
-  , exp_btn s |> toForm 
-  , snd_btn s |> toForm |> moveY -20
-  , att_btn s |> toForm |> moveY -40
-  ] |> group |> moveY -30
+  let bg = if s == On then white else black
+      fg = if s == On then black else white
+   in [ title_btn bg fg |> toForm |> moveY 80
+      , skl_btn bg fg |> toForm |> moveY  40 
+      , sur_btn bg fg |> toForm |> moveY  20
+      , exp_btn bg fg |> toForm 
+      , snd_btn bg fg |> toForm |> moveY -20
+      , att_btn bg fg |> toForm |> moveY -40
+      ] |> group |> moveY -30
               
 -- Display function. Takes everything and spits it out as an element
 display : (Int, Int) -> Input -> GameState -> Element
 display (w,h) 
         (inout)
-        ({lstate, gstate} as game) = 
+        ({lstate, gstate, paused} as game) = 
   let w' = toFloat w
       h' = toFloat h
       light = if  | lstate == Off -> rect w' h' |> filled black
                   | otherwise     -> rect w' h' |> filled white
+      objects = if | gstate == Start -> light :: (modeSelect lstate) :: []
+                   | paused -> light :: pauseMenu lstate :: []
+                   | otherwise -> light :: []
    in flow down [
-                 --asText inout, asText game, 
-                 collage w h [light, (modeSelect lstate)]
+                 asText inout, asText game, 
+                 collage w h objects
                  ]
 

@@ -2,7 +2,6 @@ module VGupdate where
 
 import VGmodel (..)
 
-
 {---------------------- UPDATE -----------------}
 
 -- Utility function. toggles a lgiht state
@@ -20,10 +19,19 @@ lightSwitch : GameState -> Bool -> Bool -> Lstate
 lightSwitch {lstate, gstate} flipped timed = 
   if (not timed) && (not flipped) then lstate else
     case gstate of
-      Start -> if timed then toggle lstate else lstate
-      Skill -> if | lstate == Off && timed  -> toggle lstate
-                  | lstate == On && flipped -> toggle lstate
-                  | otherwise -> lstate
+      Start   -> if timed then toggle lstate else lstate
+      Skill   -> if | lstate == Off && timed  -> toggle lstate
+                    | lstate == On && flipped -> toggle lstate
+                    | otherwise -> lstate
+      Survival -> if | lstate == On  && timed   -> toggle lstate
+                    | lstate == Off && flipped -> toggle lstate
+                    | otherwise -> lstate
+      Explore -> if | flipped -> toggle lstate
+                    | otherwise -> lstate
+      Sandbox -> if | timed   -> toggle lstate
+                    | flipped -> toggle lstate
+                    | otherwise -> lstate
+      Attract -> if timed then toggle lstate else lstate
       _     -> toggle lstate
 
 -- Method for recording game progress. 
@@ -39,18 +47,21 @@ stepPlayer ({ timeOn, timeOff, pflips } as player)
 
 -- Primary update layer, allows for pausing of game. 
 pauseGame : Input -> GameState -> GameState
-pauseGame ({ space } as input) ({paused} as game) =
+pauseGame ({ space, istate } as input) ({gstate, paused} as game) =
   let paused' = if space then (not paused) else paused
-  in if (not paused') 
-     then stepGame input {game| paused <- paused'} 
-     else {game| paused <- paused'}
+  in if | not paused' -> stepGame input {game| paused <- paused'} 
+        | istate == Start -> stepGame input <| 
+                  { game | gstate <- istate
+                         , paused <- False
+                  }
+        | otherwise ->  {game| paused <- paused'}
      
 -- Game state logic
 stepGame : Input -> GameState -> GameState
-stepGame { flips, mpos, space, rando, delta }
+stepGame { flips, space, rando, delta, istate }
          ({ lstate, gstate, paused, gflips, timer, grando, player } as game) =
     let state' = lightSwitch game (flips > gflips) (timer > grando)
-        gstate' = gstate
+        gstate' = istate
         gflips' = flips      
         timer' = if state' /= lstate then 0     else timer + delta
         grando'= if state' /= lstate then rando else grando
