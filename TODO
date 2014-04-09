@@ -1,11 +1,17 @@
-> Add in logic for other game modes
-> Add in function to switch game modes
-> selecting things with the mouse
-> Title screen and menu
-> Pause screen and menu
-> Styling for text on the screen
+* Add in logic for other game modes
+* Add in function to switch game modes
+* selecting things with the mouse
+* Title screen and menu
+* Pause screen and menu
+* Styling for text on the screen
 > Styling of the rest of the page so it looks good
-> splitting the file so its more organized. 
+* splitting the file so its more organized. 
 > whore myself out to people for exposure
 
+> Make the actual light a button
+> Better yet, make the On and Off states two different buttons
+> separate the time based signals from the discrete
+> make the light switch state based on a merged signal of timer and the mouse
+
+> actually embrace the FRP. 
 
