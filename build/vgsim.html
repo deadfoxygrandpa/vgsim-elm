@@ -28,6 +28,7 @@ Elm.Main.make = function (_elm) {
    var VGmodel = Elm.VGmodel.make(_elm);
    var VGrender = Elm.VGrender.make(_elm);
    var VGupdate = Elm.VGupdate.make(_elm);
+   var Window = Elm.Window.make(_elm);
    var _op = {};
    var gameState = A3(Signal.foldp,
    VGupdate.pauseGame,
@@ -35,10 +36,8 @@ Elm.Main.make = function (_elm) {
    VGmodel.input);
    var main = A2(Signal._op["~"],
    A2(Signal._op["<~"],
-   VGrender.display({ctor: "_Tuple2"
-                    ,_0: 300
-                    ,_1: 300}),
-   VGmodel.input),
+   VGrender.display,
+   Window.dimensions),
    gameState);
    _elm.Main.values = {_op: _op
                       ,gameState: gameState
@@ -346,8 +345,7 @@ Elm.VGrender.make = function (_elm) {
          fg));
       }();
    };
-   var display = F3(function (_v0,
-   inout,
+   var display = F2(function (_v0,
    _v1) {
       return function () {
          return function () {
@@ -376,12 +374,10 @@ Elm.VGrender.make = function (_elm) {
                                                                                                           ,_1: _J.toList([])};
                     return A2(Graphics.Element.flow,
                     Graphics.Element.down,
-                    _J.toList([Text.asText(inout)
-                              ,Text.asText(_v1)
-                              ,A3(Graphics.Collage.collage,
-                              _v0._0,
-                              _v0._1,
-                              objects)]));
+                    _J.toList([A3(Graphics.Collage.collage,
+                    _v0._0,
+                    _v0._1,
+                    objects)]));
                  }();}
             _E.Case($moduleName,
             "between lines 71 and 81");

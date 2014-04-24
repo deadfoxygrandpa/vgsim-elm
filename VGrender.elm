@@ -64,9 +64,9 @@ modeSelect s =
       ] |> group |> moveY -30
               
 -- Display function. Takes everything and spits it out as an element
-display : (Int, Int) -> Input -> GameState -> Element
+display : (Int, Int) -> GameState -> Element
 display (w,h) 
-        (inout)
+        --(inout)
         ({lstate, gstate, paused} as game) = 
   let w' = toFloat w
       h' = toFloat h
@@ -76,7 +76,7 @@ display (w,h)
                    | paused -> light :: pauseMenu lstate :: []
                    | otherwise -> light :: []
    in flow down [
-                 asText inout, asText game, 
+                 --asText inout, asText game, 
                  collage w h objects
                  ]
 
