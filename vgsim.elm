@@ -5,4 +5,5 @@ import VGrender (..)
 import Window
 
 gameState = foldp pauseGame defaultGame input
-main = display <~ Window.dimensions ~ gameState -- ~ input
+modeSelectForm = modeSelect <~ (dropRepeats <| .lstate <~ gameState)
+main = display <~ Window.dimensions ~ modeSelectForm ~ gameState -- ~ input

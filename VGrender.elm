@@ -64,15 +64,16 @@ modeSelect s =
       ] |> group |> moveY -30
               
 -- Display function. Takes everything and spits it out as an element
-display : (Int, Int) -> GameState -> Element
+display : (Int, Int) -> Form -> GameState -> Element
 display (w,h) 
         --(inout)
+        modeSelectForm
         ({lstate, gstate, paused} as game) = 
   let w' = toFloat w
       h' = toFloat h
       light = if  | lstate == Off -> rect w' h' |> filled black
                   | otherwise     -> rect w' h' |> filled white
-      objects = if | gstate == Start -> light :: (modeSelect lstate) :: []
+      objects = if | gstate == Start -> light :: modeSelectForm :: []
                    | paused -> light :: pauseMenu lstate :: []
                    | otherwise -> light :: []
    in flow down [
